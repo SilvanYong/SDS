@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDS抑郁自评量表</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: white;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            border: 1px solid #ddd;
+            padding: 40px;
+            position: relative;
+        }
+
+        .language-selector {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .language-selector select {
+            padding: 8px 12px;
+            border: 1px solid #333;
+            background: white;
+            color: #333;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 25px;
+            margin-top: 20px;
+        }
+
+        .header h1 {
+            font-size: 26px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .info-form {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .form-group select, .form-group input {
+            width: 220px;
+            padding: 10px;
+            border: 1px solid #333;
+            font-size: 14px;
+        }
+
+        .question-container {
+            display: none;
+        }
+
+        .question-header {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 15px;
+        }
+
+        .question-number {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .options-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        .options-table td {
+            border: 1px solid #333;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .options-table td:hover {
+            background-color: #f5f5f5;
+        }
+
+        .options-table td.selected {
+            background-color: #333;
+            color: white;
+        }
+
+        .btn {
+            background: #333;
+            color: white;
+            border: 1px solid #333;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+
+        .btn:hover {
+            background: #555;
+        }
+
+        .btn-outline {
+            background: white;
+            color: #333;
+            border: 1px solid #333;
+        }
+
+        .btn-outline:hover {
+            background: #f5f5f5;
+        }
+
+        .progress {
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .review-container {
+            display: none;
+        }
+
+        .question-nav {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 5px;
+            margin-bottom: 30px;
+        }
+
+        .nav-btn {
+            padding: 8px;
+            border: 1px solid #333;
+            background: white;
+            cursor: pointer;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .nav-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .nav-btn.answered {
+            background: #333;
+            color: white;
+        }
+
+        .result-container {
+            display: none;
+        }
+
+        .result-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .result-table th,
+        .result-table td {
+            border: 1px solid #333;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .result-table th {
+            background: #f5f5f5;
+            font-weight: bold;
+        }
+
+        .result-summary {
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 2px solid #333;
+            text-align: center;
+        }
+
+        .result-summary h3 {
+            margin-bottom: 10px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .download-form-group {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .download-form-group label {
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .download-form-group input {
+            width: 150px;
+            padding: 8px;
+            border: 1px solid #333;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 语言选择器 -->
+        <div class="language-selector">
+            <select id="language-select" onchange="changeLanguage()">
+                <option value="zh">中文</option>
+                <option value="en">English</option>
+            </select>
+        </div>
+
+        <div class="header">
+            <h1 id="main-title">SDS抑郁自评量表</h1>
+            <p id="main-subtitle">Zung Self-Rating Depression Scale</p>
+        </div>
+
+        <!-- 基本信息 -->
+        <div id="info-section" class="info-form">
+            <div class="form-group">
+                <label for="gender" id="gender-label">性别：</label>
+                <select id="gender" required>
+                    <option value="" id="gender-placeholder">请选择</option>
+                    <option value="male" id="gender-male">男</option>
+                    <option value="female" id="gender-female">女</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="age" id="age-label">年龄段：</label>
+                <select id="age" required>
+                    <option value="" id="age-placeholder">请选择</option>
+                    <option value="18-25" id="age-18-25">18-25岁</option>
+                    <option value="26-35" id="age-26-35">26-35岁</option>
+                    <option value="36-45" id="age-36-45">36-45岁</option>
+                    <option value="46-55" id="age-46-55">46-55岁</option>
+                    <option value="56-65" id="age-56-65">56-65岁</option>
+                    <option value="65+" id="age-65">65岁以上</option>
+                </select>
+            </div>
+            <button class="btn" onclick="startTest()" id="start-btn">开始测试</button>
+        </div>
+
+        <!-- 测试界面 -->
+        <div id="test-section" class="question-container">
+            <div class="progress" id="progress">第1题 / 共20题</div>
+            
+            <div class="question-header">
+                <div class="question-text" id="question-text"></div>
+            </div>
+
+            <table class="options-table" id="options-table">
+                <tr>
+                    <td data-value="0" id="option-a">A. 很少有</td>
+                </tr>
+                <tr>
+                    <td data-value="1" id="option-b">B. 有时有</td>
+                </tr>
+                <tr>
+                    <td data-value="2" id="option-c">C. 经常有</td>
+                </tr>
+                <tr>
+                    <td data-value="3" id="option-d">D. 持续有</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- 检查界面 -->
+        <div id="review-section" class="review-container">
+            <h3 style="margin-bottom: 20px;" id="review-title">请检查您的答案</h3>
+            <div class="question-nav" id="question-nav"></div>
+            <div>
+                <button class="btn btn-outline" onclick="backToTest()" id="back-btn">返回测试</button>
+                <button class="btn" onclick="submitTest()" id="submit-btn">提交测试</button>
+            </div>
+        </div>
+
+        <!-- 结果界面 -->
+        <div id="result-section" class="result-container">
+            <div class="result-summary">
+                <h3 id="result-title">测试结果</h3>
+                <p id="result-description"></p>
+            </div>
+            
+            <table class="result-table">
+                <thead>
+                    <tr>
+                        <th id="eval-item">评估项目</th>
+                        <th id="result-value">结果</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="total-score-label">总分</td>
+                        <td id="total-score">-</td>
+                    </tr>
+                    <tr>
+                        <td id="depression-index-label">抑郁严重程度指数</td>
+                        <td id="depression-index">-</td>
+                    </tr>
+                    <tr>
+                        <td id="clinical-judgment-label">临床判断</td>
+                        <td id="clinical-judgment">-</td>
+                    </tr>
+                    <tr>
+                        <td id="test-date-label">测试日期</td>
+                        <td id="test-date">-</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="btn btn-outline" onclick="showDownloadForm()" id="download-btn">下载报告</button>
+                <button class="btn" onclick="restartTest()" id="restart-btn">重新测试</button>
+            </div>
+
+            <!-- 下载报告表单 -->
+            <div id="download-form" style="display: none; margin-top: 30px; text-align: center; border-top: 1px solid #ddd; padding-top: 30px;">
+                <h4 style="margin-bottom: 20px;" id="download-title">下载测试报告</h4>
+                <div class="download-form-group">
+                    <label for="user-name" id="name-label">姓名：</label>
+                    <input type="text" id="user-name" placeholder="请输入姓名">
+                </div>
+                <div class="download-form-group">
+                    <label for="user-exact-age" id="exact-age-label">具体年龄：</label>
+                    <input type="number" id="user-exact-age" placeholder="请输入年龄" min="1" max="120">
+                </div>
+                <button class="btn" onclick="downloadReport()" id="generate-pdf-btn">生成并下载PDF报告</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 语言包
+        const translations = {
+            zh: {
+                mainTitle: "SDS抑郁自评量表",
+                mainSubtitle: "Zung Self-Rating Depression Scale",
+                genderLabel: "性别：",
+                genderPlaceholder: "请选择",
+                genderMale: "男",
+                genderFemale: "女",
+                ageLabel: "年龄段：",
+                agePlaceholder: "请选择",
+                age18_25: "18-25岁",
+                age26_35: "26-35岁",
+                age36_45: "36-45岁",
+                age46_55: "46-55岁",
+                age56_65: "56-65岁",
+                age65: "65岁以上",
+                startBtn: "开始测试",
+                optionA: "A. 很少有",
+                optionB: "B. 有时有",
+                optionC: "C. 经常有",
+                optionD: "D. 持续有",
+                reviewTitle: "请检查您的答案",
+                backBtn: "返回测试",
+                submitBtn: "提交测试",
+                resultTitle: "测试结果",
+                evalItem: "评估项目",
+                resultValue: "结果",
+                totalScoreLabel: "总分",
+                depressionIndexLabel: "抑郁严重程度指数",
+                clinicalJudgmentLabel: "临床判断",
+                testDateLabel: "测试日期",
+                downloadBtn: "下载报告",
+                restartBtn: "重新测试",
+                downloadTitle: "下载测试报告",
+                nameLabel: "姓名：",
+                namePlaceholder: "请输入姓名",
+                exactAgeLabel: "具体年龄：",
+                agePlaceholder: "请输入年龄",
+                generatePdfBtn: "生成并下载PDF报告",
+                questions: [
+                    "我感到情绪沮丧、郁闷",
+                    "我感到早晨心情最好",
+                    "我要哭或想哭",
+                    "我夜间睡眠不好",
+                    "我吃饭象平时一样多",
+                    "我的性功能正常",
+                    "我感到体重减轻",
+                    "我为便秘烦恼",
+                    "我的心跳比平时快",
+                    "我无故感到疲劳",
+                    "我的头脑象往常一样清楚",
+                    "我做事情象平时一样不感到困难",
+                    "我坐卧不安、难以保持平静",
+                    "我对未来感到有希望",
+                    "我比平时更容易激怒",
+                    "我觉得决定什么事很容易",
+                    "我感到自己是有用的和不可缺少的人",
+                    "我的生活很有意义",
+                    "假若我死了别人会过得更好",
+                    "我仍旧喜爱自己平时喜爱的东西"
+                ],
+                progressText: "第{current}题 / 共20题",
+                validationInfo: "请填写完整的基本信息",
+                validationComplete: "请完成所有题目后再提交",
+                validationName: "请输入您的姓名",
+                validationAge: "请输入有效的年龄（1-120岁）",
+                judgments: {
+                    normal: "正常范围",
+                    mild: "轻度抑郁",
+                    moderate: "中度抑郁",
+                    severe: "重度抑郁"
+                },
+                descriptions: {
+                    normal: "您的抑郁症状在正常范围内，心理状态良好。",
+                    mild: "您可能存在轻度抑郁症状，建议关注情绪变化，必要时咨询专业人士。",
+                    moderate: "您可能存在中度抑郁症状，建议尽快咨询心理健康专业人士。",
+                    severe: "您可能存在重度抑郁症状，强烈建议立即寻求专业心理健康服务。"
+                },
+                pdfTitle: "SDS抑郁自评量表测试报告",
+                pdfSubtitle: "Zung Self-Rating Depression Scale Report",
+                basicInfo: "基本信息",
+                testResult: "测试结果",
+                detailedAnswers: "详细答题记录",
+                itemNumber: "题号",
+                questionContent: "题目内容",
+                selectedAnswer: "选择答案",
+                score: "得分",
+                referenceRange: "参考范围",
+                disclaimer: "本测试结果仅供参考，不能作为诊断依据。如有疑虑，请咨询专业医生。",
+                reviewDoctor: "审核医生：",
+                date: "日期："
+            },
+            en: {
+                mainTitle: "SDS Self-Rating Depression Scale",
+                mainSubtitle: "Zung Self-Rating Depression Scale",
+                genderLabel: "Gender:",
+                genderPlaceholder: "Please select",
+                genderMale: "Male",
+                genderFemale: "Female",
+                ageLabel: "Age Group:",
+                agePlaceholder: "Please select",
+                age18_25: "18-25 years",
+                age26_35: "26-35 years",
+                age36_45: "36-45 years",
+                age46_55: "46-55 years",
+                age56_65: "56-65 years",
+                age65: "Over 65 years",
+                startBtn: "Start Test",
+                optionA: "A. Rarely",
+                optionB: "B. Sometimes",
+                optionC: "C. Often",
+                optionD: "D. Always",
+                reviewTitle: "Please review your answers",
+                backBtn: "Back to Test",
+                submitBtn: "Submit Test",
+                resultTitle: "Test Results",
+                evalItem: "Assessment Item",
+                resultValue: "Result",
+                totalScoreLabel: "Total Score",
+                depressionIndexLabel: "Depression Severity Index",
+                clinicalJudgmentLabel: "Clinical Assessment",
+                testDateLabel: "Test Date",
+                downloadBtn: "Download Report",
+                restartBtn: "Restart Test",
+                downloadTitle: "Download Test Report",
+                nameLabel: "Name:",
+                namePlaceholder: "Please enter name",
+                exactAgeLabel: "Exact Age:",
+                agePlaceholder: "Please enter age",
+                generatePdfBtn: "Generate and Download PDF Report",
+                questions: [
+                    "I feel down-hearted and blue",
+                    "Morning is when I feel the best",
+                    "I have crying spells or feel like it",
+                    "I have trouble sleeping at night",
+                    "I eat as much as I used to",
+                    "I still enjoy sex",
+                    "I notice that I am losing weight",
+                    "I have trouble with constipation",
+                    "My heart beats faster than usual",
+                    "I get tired for no reason",
+                    "My mind is as clear as it used to be",
+                    "I find it easy to do the things I used to",
+                    "I am restless and can't keep still",
+                    "I feel hopeful about the future",
+                    "I am more irritable than usual",
+                    "I find it easy to make decisions",
+                    "I feel that I am useful and needed",
+                    "My life is pretty full",
+                    "I feel that others would be better off if I were dead",
+                    "I still enjoy the things I used to do"
+                ],
+                progressText: "Question {current} of 20",
+                validationInfo: "Please fill in all basic information",
+                validationComplete: "Please complete all questions before submitting",
+                validationName: "Please enter your name",
+                validationAge: "Please enter a valid age (1-120 years)",
+                judgments: {
+                    normal: "Normal Range",
+                    mild: "Mild Depression",
+                    moderate: "Moderate Depression",
+                    severe: "Severe Depression"
+                },
+                descriptions: {
+                    normal: "Your depression symptoms are within normal range, indicating good mental health.",
+                    mild: "You may have mild depression symptoms. Consider monitoring your mood and consulting a professional if needed.",
+                    moderate: "You may have moderate depression symptoms. It is recommended to consult a mental health professional soon.",
+                    severe: "You may have severe depression symptoms. It is strongly recommended to seek professional mental health services immediately."
+                },
+                pdfTitle: "SDS Self-Rating Depression Scale Report",
+                pdfSubtitle: "Zung Self-Rating Depression Scale Report",
+                basicInfo: "Basic Information",
+                testResult: "Test Results",
+                detailedAnswers: "Detailed Answer Record",
+                itemNumber: "No.",
+                questionContent: "Question Content",
+                selectedAnswer: "Selected Answer",
+                score: "Score",
+                referenceRange: "Reference Range",
+                disclaimer: "This test result is for reference only and cannot be used as a diagnostic basis. If you have concerns, please consult a professional doctor.",
+                reviewDoctor: "Reviewing Doctor:",
+                date: "Date:"
+            }
+        };
+
+        let currentLanguage = 'zh';
+        const positiveItems = [0, 2, 3, 6, 7, 8, 9, 12, 14, 18];
+        
+        let currentQuestion = 0;
+        let answers = new Array(20).fill(null);
+        let userInfo = {};
+
+        function changeLanguage() {
+            currentLanguage = document.getElementById('language-select').value;
+            document.documentElement.lang = currentLanguage === 'zh' ? 'zh-CN' : 'en';
+            updateLanguage();
+        }
+
+        function updateLanguage() {
+            const t = translations[currentLanguage];
+            
+            // 更新页面元素
+            document.getElementById('main-title').textContent = t.mainTitle;
+            document.getElementById('main-subtitle').textContent = t.mainSubtitle;
+            document.getElementById('gender-label').textContent = t.genderLabel;
+            document.getElementById('gender-placeholder').textContent = t.genderPlaceholder;
+            document.getElementById('gender-male').textContent = t.genderMale;
+            document.getElementById('gender-female').textContent = t.genderFemale;
+            document.getElementById('age-label').textContent = t.ageLabel;
+            document.getElementById('age-placeholder').textContent = t.agePlaceholder;
+            document.getElementById('age-18-25').textContent = t.age18_25;
+            document.getElementById('age-26-35').textContent = t.age26_35;
+            document.getElementById('age-36-45').textContent = t.age36_45;
+            document.getElementById('age-46-55').textContent = t.age46_55;
+            document.getElementById('age-56-65').textContent = t.age56_65;
+            document.getElementById('age-65').textContent = t.age65;
+            document.getElementById('start-btn').textContent = t.startBtn;
+            
+            document.getElementById('option-a').textContent = t.optionA;
+            document.getElementById('option-b').textContent = t.optionB;
+            document.getElementById('option-c').textContent = t.optionC;
+            document.getElementById('option-d').textContent = t.optionD;
+            
+            document.getElementById('review-title').textContent = t.reviewTitle;
+            document.getElementById('back-btn').textContent = t.backBtn;
+            document.getElementById('submit-btn').textContent = t.submitBtn;
+            
+            document.getElementById('result-title').textContent = t.resultTitle;
+            document.getElementById('eval-item').textContent = t.evalItem;
+            document.getElementById('result-value').textContent = t.resultValue;
+            document.getElementById('total-score-label').textContent = t.totalScoreLabel;
+            document.getElementById('depression-index-label').textContent = t.depressionIndexLabel;
+            document.getElementById('clinical-judgment-label').textContent = t.clinicalJudgmentLabel;
+            document.getElementById('test-date-label').textContent = t.testDateLabel;
+            document.getElementById('download-btn').textContent = t.downloadBtn;
+            document.getElementById('restart-btn').textContent = t.restartBtn;
+            
+            document.getElementById('download-title').textContent = t.downloadTitle;
+            document.getElementById('name-label').textContent = t.nameLabel;
+            document.getElementById('user-name').placeholder = t.namePlaceholder;
+            document.getElementById('exact-age-label').textContent = t.exactAgeLabel;
+            document.getElementById('user-exact-age').placeholder = t.agePlaceholder;
+            document.getElementById('generate-pdf-btn').textContent = t.generatePdfBtn;
+            
+            // 更新当前问题显示
+            if (document.getElementById('test-section').style.display === 'block') {
+                showQuestion(currentQuestion);
+            }
+        }
+
+        function startTest() {
+            const gender = document.getElementById('gender').value;
+            const age = document.getElementById('age').value;
+            
+            if (!gender || !age) {
+                alert(translations[currentLanguage].validationInfo);
+                return;
+            }
+            
+            userInfo = { gender, age };
+            document.getElementById('info-section').style.display = 'none';
+            document.getElementById('test-section').style.display = 'block';
+            
+            showQuestion(0);
+        }
+
+        function showQuestion(index) {
+            currentQuestion = index;
+            const t = translations[currentLanguage];
+            
+            document.getElementById('progress').textContent = t.progressText.replace('{current}', index + 1);
+            document.getElementById('question-text').textContent = t.questions[index];
+            
+            // 清除之前的选择状态
+            const cells = document.querySelectorAll('.options-table td');
+            cells.forEach(cell => {
+                cell.classList.remove('selected');
+                if (answers[index] !== null && cell.getAttribute('data-value') == answers[index]) {
+                    cell.classList.add('selected');
+                }
+            });
+            
+            // 添加点击事件
+            cells.forEach(cell => {
+                cell.onclick = function() {
+                    const value = parseInt(this.getAttribute('data-value'));
+                    answers[index] = value;
+                    
+                    // 更新选择状态
+                    cells.forEach(c => c.classList.remove('selected'));
+                    this.classList.add('selected');
+                    
+                    // 延迟跳转
+                    setTimeout(() => {
+                        if (index < 19) {
+                            showQuestion(index + 1);
+                        } else {
+                            showReview();
+                        }
+                    }, 300);
+                };
+            });
+        }
+
+        function showReview() {
+            document.getElementById('test-section').style.display = 'none';
+            document.getElementById('review-section').style.display = 'block';
+            
+            const nav = document.getElementById('question-nav');
+            nav.innerHTML = '';
+            
+            for (let i = 0; i < 20; i++) {
+                const btn = document.createElement('button');
+                btn.className = `nav-btn ${answers[i] !== null ? 'answered' : ''}`;
+                btn.textContent = i + 1;
+                btn.onclick = () => {
+                    document.getElementById('review-section').style.display = 'none';
+                    document.getElementById('test-section').style.display = 'block';
+                    showQuestion(i);
+                };
+                nav.appendChild(btn);
+            }
+        }
+
+        function backToTest() {
+            document.getElementById('review-section').style.display = 'none';
+            document.getElementById('test-section').style.display = 'block';
+            showQuestion(currentQuestion);
+        }
+
+        function submitTest() {
+            if (answers.includes(null)) {
+                alert(translations[currentLanguage].validationComplete);
+                return;
+            }
+            
+            calculateResult();
+        }
+
+        function calculateResult() {
+            let rawScore = 0;
+            
+            for (let i = 0; i < 20; i++) {
+                if (positiveItems.includes(i)) {
+                    rawScore += answers[i] + 1;
+                } else {
+                    rawScore += 4 - answers[i];
+                }
+            }
+            
+            const index = Math.round((rawScore / 80) * 100);
+            const t = translations[currentLanguage];
+            
+            let judgment, description;
+            if (index < 50) {
+                judgment = t.judgments.normal;
+                description = t.descriptions.normal;
+            } else if (index < 60) {
+                judgment = t.judgments.mild;
+                description = t.descriptions.mild;
+            } else if (index < 70) {
+                judgment = t.judgments.moderate;
+                description = t.descriptions.moderate;
+            } else {
+                judgment = t.judgments.severe;
+                description = t.descriptions.severe;
+            }
+            
+            document.getElementById('review-section').style.display = 'none';
+            document.getElementById('result-section').style.display = 'block';
+            
+            document.getElementById('result-description').textContent = description;
+            document.getElementById('total-score').textContent = rawScore + (currentLanguage === 'zh' ? ' 分' : ' points');
+            document.getElementById('depression-index').textContent = index;
+            document.getElementById('clinical-judgment').textContent = judgment;
+            document.getElementById('test-date').textContent = new Date().toLocaleDateString();
+        }
+
+        function restartTest() {
+            currentQuestion = 0;
+            answers = new Array(20).fill(null);
+            userInfo = {};
+            
+            document.getElementById('result-section').style.display = 'none';
+            document.getElementById('info-section').style.display = 'block';
+            document.getElementById('download-form').style.display = 'none';
+            
+            document.getElementById('gender').value = '';
+            document.getElementById('age').value = '';
+            document.getElementById('user-name').value = '';
+            document.getElementById('user-exact-age').value = '';
+        }
+
+        function showDownloadForm() {
+            document.getElementById('download-form').style.display = 'block';
+        }
+
+        function downloadReport() {
+            const userName = document.getElementById('user-name').value.trim();
+            const userExactAge = document.getElementById('user-exact-age').value.trim();
+            const t = translations[currentLanguage];
+            
+            if (!userName) {
+                alert(t.validationName);
+                return;
+            }
+            
+            if (!userExactAge || parseInt(userExactAge) < 1 || parseInt(userExactAge) > 120) {
+                alert(t.validationAge);
+                return;
+            }
+
+            // 计算结果数据
+            let rawScore = 0;
+            for (let i = 0; i < 20; i++) {
+                if (positiveItems.includes(i)) {
+                    rawScore += answers[i] + 1;
+                } else {
+                    rawScore += 4 - answers[i];
+                }
+            }
+            const index = Math.round((rawScore / 80) * 100);
+            
+            let judgment;
+            if (index < 50) {
+                judgment = t.judgments.normal;
+            } else if (index < 60) {
+                judgment = t.judgments.mild;
+            } else if (index < 70) {
+                judgment = t.judgments.moderate;
+            } else {
+                judgment = t.judgments.severe;
+            }
+
+            // 生成PDF内容
+            generatePDF(userName, parseInt(userExactAge), rawScore, index, judgment);
+        }
+
+        function generatePDF(userName, userExactAge, rawScore, index, judgment) {
+            const t = translations[currentLanguage];
+            const isEnglish = currentLanguage === 'en';
+            
+            // 创建新窗口用于打印
+            const printWindow = window.open('', '', 'width=800,height=600');
+            
+            const genderText = userInfo.gender === 'male' ? 
+                (isEnglish ? 'Male' : '男') : 
+                (isEnglish ? 'Female' : '女');
+            
+            const ageRangeText = isEnglish ? {
+                '18-25': '18-25 years',
+                '26-35': '26-35 years', 
+                '36-45': '36-45 years',
+                '46-55': '46-55 years',
+                '56-65': '56-65 years',
+                '65+': 'Over 65 years'
+            } : {
+                '18-25': '18-25岁',
+                '26-35': '26-35岁',
+                '36-45': '36-45岁', 
+                '46-55': '46-55岁',
+                '56-65': '56-65岁',
+                '65+': '65岁以上'
+            };
+            
+            const optionLabels = isEnglish ? 
+                ['A. Rarely', 'B. Sometimes', 'C. Often', 'D. Always'] :
+                ['A. 很少有', 'B. 有时有', 'C. 经常有', 'D. 持续有'];
+            
+            const referenceRangeText = isEnglish ? 
+                '<50 Normal, 50-59 Mild, 60-69 Moderate, ≥70 Severe' :
+                '<50正常，50-59轻度，60-69中度，≥70重度';
+            
+            const content = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>${t.pdfTitle}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        body {
+            font-family: ${isEnglish ? 'Arial, sans-serif' : "'Microsoft YaHei', sans-serif"};
+            font-size: 12px;
+            line-height: 1.4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #000;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 20px;
+            margin: 0 0 10px 0;
+            font-weight: bold;
+        }
+        .header p {
+            margin: 0;
+            font-size: 14px;
+        }
+        .info-section {
+            margin-bottom: 30px;
+        }
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .info-table th,
+        .info-table td {
+            border: 1px solid #000;
+            padding: 10px;
+            text-align: left;
+        }
+        .info-table th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+            width: 25%;
+        }
+        .result-section {
+            margin-bottom: 30px;
+        }
+        .result-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .result-table th,
+        .result-table td {
+            border: 1px solid #000;
+            padding: 12px;
+            text-align: left;
+        }
+        .result-table th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+        .answers-section {
+            margin-bottom: 40px;
+        }
+        .answers-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+        }
+        .answers-table th,
+        .answers-table td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: center;
+        }
+        .answers-table th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+        .answers-table td.question {
+            text-align: left;
+            width: 60%;
+        }
+        .signature-section {
+            margin-top: 50px;
+            border-top: 1px solid #000;
+            padding-top: 20px;
+        }
+        .signature-line {
+            display: inline-block;
+            width: 200px;
+            border-bottom: 1px solid #000;
+            margin-left: 20px;
+        }
+        .date-line {
+            display: inline-block;
+            width: 150px;
+            border-bottom: 1px solid #000;
+            margin-left: 20px;
+        }
+        .page-break {
+            page-break-before: always;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>${t.pdfTitle}</h1>
+        <p>${t.pdfSubtitle}</p>
+    </div>
+
+    <div class="info-section">
+        <h3>${t.basicInfo}</h3>
+        <table class="info-table">
+            <tr>
+                <th>${isEnglish ? 'Name' : '姓名'}</th>
+                <td>${userName}</td>
+                <th>${isEnglish ? 'Gender' : '性别'}</th>
+                <td>${genderText}</td>
+            </tr>
+            <tr>
+                <th>${isEnglish ? 'Age' : '年龄'}</th>
+                <td>${userExactAge}${isEnglish ? ' years old' : '岁'}</td>
+                <th>${isEnglish ? 'Test Date' : '测试日期'}</th>
+                <td>${new Date().toLocaleDateString()}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="result-section">
+        <h3>${t.testResult}</h3>
+        <table class="result-table">
+            <tr>
+                <th>${t.evalItem}</th>
+                <th>${t.resultValue}</th>
+                <th>${t.referenceRange}</th>
+            </tr>
+            <tr>
+                <td>${t.totalScoreLabel}</td>
+                <td>${rawScore}${isEnglish ? ' points' : ' 分'}</td>
+                <td>20-80${isEnglish ? ' points' : '分'}</td>
+            </tr>
+            <tr>
+                <td>${t.depressionIndexLabel}</td>
+                <td>${index}</td>
+                <td>${referenceRangeText}</td>
+            </tr>
+            <tr>
+                <td>${t.clinicalJudgmentLabel}</td>
+                <td><strong>${judgment}</strong></td>
+                <td>-</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="answers-section">
+        <h3>${t.detailedAnswers}</h3>
+        <table class="answers-table">
+            <thead>
+                <tr>
+                    <th>${t.itemNumber}</th>
+                    <th>${t.questionContent}</th>
+                    <th>${t.selectedAnswer}</th>
+                    <th>${t.score}</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${t.questions.map((question, i) => {
+                    const score = positiveItems.includes(i) ? answers[i] + 1 : 4 - answers[i];
+                    return `
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td class="question">${question}</td>
+                        <td>${optionLabels[answers[i]]}</td>
+                        <td>${score}</td>
+                    </tr>
+                    `;
+                }).join('')}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="signature-section">
+        <p><strong>${isEnglish ? 'Note:' : '说明：'}</strong>${t.disclaimer}</p>
+        <br>
+        <p>${t.reviewDoctor}<span class="signature-line"></span> &nbsp;&nbsp;&nbsp;&nbsp; ${t.date}<span class="date-line"></span></p>
+    </div>
+</body>
+</html>
+            `;
+
+            printWindow.document.write(content);
+            printWindow.document.close();
+            
+            // 等待内容加载完成后打印
+            printWindow.onload = function() {
+                setTimeout(() => {
+                    printWindow.print();
+                    printWindow.close();
+                }, 500);
+            };
+        }
+
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            updateLanguage();
+        });
+    </script>
+</body>
+</html>
